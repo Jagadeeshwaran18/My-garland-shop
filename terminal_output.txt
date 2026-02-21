@@ -1,0 +1,19 @@
+﻿
+
+    Directory: E:\my projects\Simple_webpage\Garland
+
+
+Mode                 LastWriteTime         Length Name                         
+----                 -------------         ------ ----                         
+d-----         2/21/2026   1:23 PM                app                          
+d-----         2/21/2026   1:23 PM                garland_shop                 
+d-----         2/21/2026   1:23 PM                media                        
+-a----         2/21/2026  12:44 PM            680 create_superuser.py          
+-a----         2/21/2026  12:44 PM           1035 create_user.py               
+-a----         2/21/2026  12:44 PM         147456 db.sqlite3                   
+-a----         2/21/2026  12:44 PM            745 fix_admin.py                 
+-a----         2/21/2026  12:44 PM            690 manage.py                    
+-a----         2/21/2026  12:44 PM             33 requirements.txt             
+-a----         2/21/2026   1:36 PM              0 terminal_output.txt          
+
+

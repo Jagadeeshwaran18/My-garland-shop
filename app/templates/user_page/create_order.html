@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order - {{ post.title }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .order-form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .post-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .post-summary h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        .price-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'user_posts' %}" class="logo">Garland Shop</a>
+            <ul class="nav-links">
+                <li><a href="{% url 'user_posts' %}#home">Home</a></li>
+                <li><a href="{% url 'user_posts' %}#gallery">Gallery</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="order-form-container">
+            <h1 style="text-align: center; margin-bottom: 30px; color: #667eea;">Place Your Order</h1>
+            
+            <!-- Post Summary -->
+            <div class="post-summary">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 200px; border-radius: 8px; margin-bottom: 15px;">
+                {% endif %}
+                <h3>{{ post.title }}</h3>
+                <p style="color: #666; margin: 10px 0;">{{ post.description|truncatewords:30 }}</p>
+                <p class="price-display">Price: ₹{{ post.price }} per unit</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div style="padding: 15px; margin-bottom: 20px; background: {% if message.tags == 'error' %}#f8d7da{% else %}#d4edda{% endif %}; color: {% if message.tags == 'error' %}#721c24{% else %}#155724{% endif %}; border-radius: 8px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customer_name">Full Name *</label>
+                        <input type="text" id="customer_name" name="customer_name" value="{{ user.get_full_name|default:user.username }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer_phone">Phone Number *</label>
+                        <input type="tel" id="customer_phone" name="customer_phone" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_email">Email *</label>
+                    <input type="email" id="customer_email" name="customer_email" value="{{ user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Delivery Address *</label>
+                    <textarea id="address" name="address" rows="3" required placeholder="Enter your complete delivery address"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">Quantity *</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" required onchange="updateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery_date">Delivery Date *</label>
+                        <input type="date" id="delivery_date" name="delivery_date" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes (Optional)</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Any special instructions or requests..."></textarea>
+                </div>
+
+                <div style="background: #e7f3ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                    <p style="margin: 0; font-size: 1.2rem; font-weight: 600; color: #333;">
+                        Total Amount: <span id="total_price" style="color: #28a745;">₹{{ post.price }}</span>
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 15px; font-size: 1.1rem;">Place Order</button>
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 15px; font-size: 1.1rem; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer style="background: rgba(255, 255, 255, 0.95); padding: 30px 0; margin-top: 50px; text-align: center; color: #666;">
+        <p>&copy; 2024 Garland Shop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Set minimum date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const minDate = tomorrow.toISOString().split('T')[0];
+        document.getElementById('delivery_date').setAttribute('min', minDate);
+
+        function updateTotal() {
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const price = {{ post.price }};
+            const total = quantity * price;
+            document.getElementById('total_price').textContent = '₹' + total.toFixed(2);
+        }
+    </script>
+</body>
+</html>

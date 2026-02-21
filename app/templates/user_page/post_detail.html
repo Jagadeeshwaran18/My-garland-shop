@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} - Garland Shop</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'user_posts' %}" class="logo">Garland Shop</a>
+            <ul class="nav-links">
+                <li><a href="{% url 'user_posts' %}#home">Home</a></li>
+                <li><a href="{% url 'user_posts' %}#about">About Us</a></li>
+                <li><a href="{% url 'user_posts' %}#gallery">Gallery</a></li>
+                <li><a href="{% url 'user_posts' %}#contact">Contact</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{% url 'user_posts' %}#gallery">← Back to Gallery</a>
+        </div>
+        
+        <article class="post-detail">
+            <div style="margin-bottom: 15px;">
+                <span style="display: inline-block; background: #667eea; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">{{ post.get_category_display_name }}</span>
+            </div>
+            <h1>{{ post.title }}</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <p class="post-date" style="margin: 0;">Posted: {{ post.created_at|date:"F d, Y" }}</p>
+                <p style="margin: 0; font-size: 2rem; font-weight: bold; color: #28a745;">₹{{ post.price }}</p>
+            </div>
+            
+            {% if post.image %}
+            <div class="post-detail-image-container">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
+            </div>
+            {% endif %}
+            
+            <div class="post-description">
+                <p>{{ post.description|linebreaks }}</p>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center;">
+                <a href="{% url 'create_order' post.id %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px;">Place Order</a>
+            </div>
+        </article>
+        
+      
+        
+        <div class="actions">
+            <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary">Back to Gallery</a>
+        </div>
+    </div>
+
+    <footer style="background: rgba(255, 255, 255, 0.95); padding: 30px 0; margin-top: 50px; text-align: center; color: #666;">
+        <p>&copy; 2024 Garland Shop. All rights reserved.</p>
+    </footer>
+</body>
+</html>
