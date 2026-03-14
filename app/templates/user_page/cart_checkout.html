@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bulk Checkout - BBJM Garland{% endblock %}
+
+{% block content %}
+<section class="hero" style="height: 30vh; min-height: 250px; clip-path: none; background-position: top;">
+    <div class="hero-content">
+        <h1>Complete Your Order</h1>
+    </div>
+</section>
+
+<div class="container section-padding">
+    <div class="breadcrumb" style="margin-bottom: 2rem;">
+        <a href="{% url 'user_posts' %}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Shopping</a>
+    </div>
+
+    <div class="about-grid">
+        <div class="order-summary-card">
+            <div style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.5rem;">
+                <h3 style="margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Order Summary</h3>
+                <div id="checkoutSummaryItems">
+                    <!-- Items rendered via JS -->
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-top: 1.5rem; border-top: 1px solid #eee; padding-top: 1rem;">
+                    <span>Total Amount:</span>
+                    <span id="checkoutSummaryTotal">₹0.00</span>
+                </div>
+            </div>
+            
+            <div class="benefits-checklist" style="margin-top: 2rem; padding: 1.5rem; background: #f8f5fa; border-radius: var(--radius-md);">
+                <h5 style="margin-bottom: 1rem; color: var(--primary);">Why shop with us?</h5>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check-circle" style="color: #28a745;"></i> Freshness Guaranteed</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check-circle" style="color: #28a745;"></i> Secure Local Payments</li>
+                    <li><i class="fas fa-check-circle" style="color: #28a745;"></i> Delivered with Care</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="order-form-wrapper" style="background: white; padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+            <h2 class="section-title" style="text-align: left; font-size: 1.8rem;">Delivery Details</h2>
+            <form method="post" id="cartCheckoutForm" class="premium-form">
+                {% csrf_token %}
+                <input type="hidden" name="cart_data" id="cartDataInput">
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name</label>
+                        <input type="text" name="customer_name" value="{{ user.get_full_name|default:user.username }}" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Mobile Number</label>
+                        <input type="tel" name="customer_phone" placeholder="+91" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address</label>
+                    <input type="email" name="customer_email" value="{{ user.email }}" required 
+                           style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                </div>
+
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Delivery Date</label>
+                        <input type="date" name="delivery_date" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                    <!-- Note: Quantity logic handles individual items, bulk order assumes 1 per cart item unless specified. -->
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Delivery Address</label>
+                    <textarea name="address" rows="3" required 
+                              style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm); font-family: inherit;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 2.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Special Notes (Optional)</label>
+                    <textarea name="notes" rows="2" 
+                              style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm); font-family: inherit;"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1.2rem;">Confirm All Orders</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const rawItems = localStorage.getItem('cartItems') || '[]';
+        const items = JSON.parse(rawItems);
+        
+        if (items.length === 0) {
+            window.location.href = "{% url 'user_posts' %}"; // Redirect back if empty
+            return;
+        }
+
+        // Hydrate the hidden form field so Django can read it on POST
+        document.getElementById('cartDataInput').value = rawItems;
+
+        // Render the quick visual summary on this page
+        const summaryContainer = document.getElementById('checkoutSummaryItems');
+        let total = 0;
+        let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+        
+        items.forEach(item => {
+            total += item.price;
+            html += `
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-size: 0.95rem; color: var(--text-dark);">${item.title}</h4>
+                        <p style="margin: 0; color: var(--secondary); font-weight: 600; font-size: 0.9rem;">₹${item.price.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        summaryContainer.innerHTML = html;
+        document.getElementById('checkoutSummaryTotal').innerText = `₹${total.toFixed(2)}`;
+    });
+</script>
+{% endblock %}

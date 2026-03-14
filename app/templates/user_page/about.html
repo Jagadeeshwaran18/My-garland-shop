@@ -1,143 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>About Us</title>
+{% block title %}Our Story - BBJM Garland{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.7;
-        }
+{% block content %}
+<section class="hero" style="height: 50vh; min-height: 400px; clip-path: none;">
+    <div class="hero-content">
+        <span class="hero-subtitle">The Legacy of Flowers</span>
+        <h1>Our Story</h1>
+    </div>
+</section>
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 40px 20px;
-        }
+<div class="container section-padding">
+    <div class="breadcrumb" style="margin-bottom: 2rem;">
+        <a href="{% url 'user_posts' %}#home" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
 
-        .page-title {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 60px;
-            color: #2c2c2c;
-            letter-spacing: 1px;
-        }
+    <div class="about-grid" style="margin-bottom: 6rem;">
+        <div class="about-text-content">
+            <h2 class="section-title" style="text-align: left;">Serving with Trust Since 1963</h2>
+            <p class="lead" style="font-size: 1.3rem; margin-bottom: 2rem; color: var(--primary);">For over six decades, BBJM Garland has been more than just a flower shop.</p>
+            <p style="margin-bottom: 1.5rem;">Established in 1963, our garland shop has been serving customers with devotion, tradition, and trust for generations. We specialize in crafting fresh flower garlands using handpicked blooms, prepared daily to ensure natural fragrance and lasting beauty.</p>
+            <p>With decades of experience, we have proudly supported weddings, temple rituals, festivals, and special occasions. Our work reflects a perfect blend of traditional craftsmanship and modern reliability.</p>
+        </div>
+        <div class="about-img-frame">
+            <img src="{% static 'css/assets/about_legacy_boys.png' %}" alt="BBJM Legacy" class="about-image">
+        </div>
+    </div>
 
-        .about {
-            background-color: #ffffff;
-            margin-bottom: 40px;
-            padding: 30px 35px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+    <div class="gallery-grid" style="gap: 3rem;">
+        <div class="card card-body" style="text-align: center; background: #fdfbfd;">
+            <i class="fas fa-certificate" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+            <h3>Our Specialties</h3>
+            <p>Traditional wedding garlands, divine temple offerings, and decorative floral designs. Known for neat finishing and long-lasting freshness.</p>
+        </div>
+        <div class="card card-body" style="text-align: center; background: #fdfbfd;">
+            <i class="fas fa-heart" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+            <h3>Why Choose Us</h3>
+            <p>Unmatched experience, quality craftsmanship, and reliable service. We focus on your satisfaction above all else.</p>
+        </div>
+        <div class="card card-body" style="text-align: center; background: #fdfbfd;">
+            <i class="fas fa-hand-holding-heart" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+            <h3>Our Process</h3>
+            <p>From sourcing the midnight-fresh blooms to the final knot, every step is handled with expert care to preserve the life of the flowers.</p>
+        </div>
+        <div class="card card-body" style="text-align: center; background: #fdfbfd;">
+            <i class="fas fa-star" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+            <h3>Commitment</h3>
+            <p>Timely delivery and fair pricing. We take pride in the trust our customers have placed in us for over 60 years.</p>
+        </div>
+    </div>
+</div>
 
-        .about h1 {
-            font-size: 26px;
-            margin-bottom: 15px;
-            color: #5a2d82;
-        }
-
-        .about p {
-            font-size: 16px;
-            text-align: justify;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 32px;
-            }
-
-            .about h1 {
-                font-size: 22px;
-            }
-
-            .about p {
-                font-size: 15px;
-            }
-        }
-    </style>
-</head>
-
-<body>
+<section class="section-padding" style="background: var(--primary); color: white; text-align: center;">
     <div class="container">
-        <div class="breadcrumb">
-            <a href="{% url 'user_posts' %}#home">← Back to Home</a>
-        </div>
-
-        <div class="container">
-
-            <h1 class="page-title">About Us</h1>
-
-            <div class="about">
-                <h1>Serving with Trust Since 1963</h1>
-                <p>
-                    Established in 1963, our garland shop has been serving customers with devotion, tradition, and trust
-                    for generations.
-                    We specialize in crafting fresh flower garlands using handpicked blooms, prepared daily to ensure
-                    natural fragrance
-                    and lasting beauty. With decades of experience, we have proudly supported weddings, temple rituals,
-                    festivals, and
-                    special occasions. Our work reflects a perfect blend of traditional craftsmanship and quality
-                    service. Customer
-                    satisfaction and timely delivery have always been at the heart of our journey.
-                </p>
-            </div>
-
-            <div class="about">
-                <h1>What We Do</h1>
-                <p>
-                    We create fresh and beautifully handcrafted flower garlands for all occasions. Our services include
-                    wedding
-                    garlands, temple garlands, festival decorations, and special event floral arrangements. Every
-                    garland is prepared
-                    daily using fresh flowers to ensure elegance, durability, and natural fragrance.
-                </p>
-            </div>
-
-            <div class="about">
-                <h1>Our Specialties</h1>
-                <p>
-                    We specialize in traditional wedding garlands, divine temple garlands, and decorative floral designs
-                    for
-                    engagements, birthdays, and festivals. Our garlands are known for their neat finishing, balanced
-                    designs, and
-                    long-lasting freshness, crafted with years of experience and dedication.
-                </p>
-            </div>
-
-            <div class="about">
-                <h1>Why Choose Us</h1>
-                <p>
-                    With a trusted legacy since 1963, we offer unmatched experience, quality craftsmanship, and reliable
-                    service.
-                    We focus on freshness, timely delivery, and complete customer satisfaction. Our commitment to
-                    tradition and
-                    attention to detail make us a preferred choice for generations of families.
-                </p>
-            </div>
-
-            <div class="about">
-                <h1>Quality & Customer Commitment</h1>
-                <p>
-                    We are committed to delivering the highest quality garlands made from carefully selected fresh
-                    flowers.
-                    Each piece is handcrafted with precision to ensure beauty, fragrance, and durability. Customer
-                    satisfaction
-                    remains our top priority, and we take pride in timely delivery, fair pricing, and consistent service
-                    that has
-                    earned the trust of our customers over the years.
-                </p>
-            </div>
-
-        </div>
-
-</body>
-
-</html>
+        <h2 class="section-title" style="color: white; border-bottom-color: var(--accent);">Our Mission</h2>
+        <p style="font-size: 1.5rem; font-family: var(--font-heading); font-style: italic; max-width: 800px; margin: 0 auto; opacity: 0.9;">
+            "To preserve the art of traditional garland making while bringing the beauty of fresh flowers into every home and celebration."
+        </p>
+    </div>
+</section>
+{% endblock %}

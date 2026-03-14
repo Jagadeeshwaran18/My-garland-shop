@@ -12,6 +12,7 @@ urlpatterns = [
     path('post/<int:id>/', views.post_detail, name='post_detail'),
     path('category/<str:category>/', views.category_page, name='category_page'),
     path('about/', views.about, name='about'),
+    path('cart/checkout/', views.cart_checkout, name='cart_checkout'),
     path('order/<int:post_id>/', views.create_order, name='create_order'),
     
     # ADMIN

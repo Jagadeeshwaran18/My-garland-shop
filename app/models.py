@@ -8,6 +8,7 @@ class Post(models.Model):
         ('marriage', 'Decoration for Marriage'),
         ('gods', 'Gods Decoration'),
         ('gods_decoration', 'Gods Garland '),
+        ('others', 'Others'),
     ]
     
     title = models.CharField(max_length=200)
@@ -27,7 +28,7 @@ class Post(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
+        ('processing', 'In Process'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
@@ -52,9 +53,12 @@ class Order(models.Model):
     
     def get_status_display_color(self):
         status_colors = {
-            'pending': '#ffc107',
-            'confirmed': '#17a2b8',
-            'completed': '#28a745',
-            'cancelled': '#dc3545',
+            'pending': '#ffc107',    # Amber/Gold
+            'processing': '#007bff', # Royal Blue
+            'completed': '#28a745',  # Emerald Green
+            'cancelled': '#dc3545',  # Rose Red
         }
         return status_colors.get(self.status, '#6c757d')
+    
+    def get_status_display_name(self):
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime
+import json
 from .models import Post, Order
 
 # Create your views here.
@@ -73,6 +74,7 @@ def register_view(request):
                     email=email,
                     password=password
                 )
+                messages.success(request, "Account created successfully! You can now log in.")
                 return redirect('login')
             except IntegrityError:
                 error_message = "Username already exists. Please choose another."
@@ -88,7 +90,7 @@ def logout_view(request):
 
 
 # USER VIEWS (require login)
-@login_required(login_url='login')
+# Public view (no login required for browsing)
 def user_post_list(request):
     posts = Post.objects.all()
     categories = Post.CATEGORY_CHOICES
@@ -122,12 +124,63 @@ def post_detail(request, id):
     post = get_object_or_404(Post, id=id)
     return render(request, 'user_page/post_detail.html', {'post': post})
 
-@login_required(login_url='login')
+# Public view
 def about(request):
     return render(request, 'user_page/about.html')
 
 
 # ORDER VIEWS
+@login_required(login_url='login')
+def cart_checkout(request):
+    if request.method == 'POST':
+        try:
+            cart_data_json = request.POST.get('cart_data')
+            if not cart_data_json:
+                messages.error(request, 'Your cart is empty.')
+                return redirect('user_posts')
+                
+            cart_items = json.loads(cart_data_json)
+            
+            delivery_date = request.POST.get('delivery_date')
+            customer_name = request.POST.get('customer_name')
+            customer_phone = request.POST.get('customer_phone')
+            customer_email = request.POST.get('customer_email')
+            address = request.POST.get('address')
+            notes = request.POST.get('notes', '')
+            
+            if not all([delivery_date, customer_name, customer_phone, customer_email, address]):
+                messages.error(request, 'Please fill in all required fields.')
+                return render(request, 'user_page/cart_checkout.html')
+            
+            order_date = timezone.now().date()
+            delivery_date_obj = datetime.strptime(delivery_date, '%Y-%m-%d').date()
+            
+            # Create an order for each item in the cart array
+            for item in cart_items:
+                post = get_object_or_404(Post, id=item.get('id'))
+                Order.objects.create(
+                    user=request.user,
+                    post=post,
+                    order_date=order_date,
+                    delivery_date=delivery_date_obj,
+                    quantity=1,
+                    total_price=post.price,
+                    customer_name=customer_name,
+                    customer_phone=customer_phone,
+                    customer_email=customer_email,
+                    address=address,
+                    notes=notes,
+                    status='pending'
+                )
+                
+            messages.success(request, 'All cart items ordered successfully!')
+            return render(request, 'user_page/order_success.html')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating orders: {str(e)}')
+            
+    return render(request, 'user_page/cart_checkout.html')
+
 @login_required(login_url='login')
 def create_order(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -186,6 +239,7 @@ def admin_dashboard(request):
         'posts': posts,
         'orders': orders,
         'all_users': all_users,
+        'users_count': all_users.count(),
         'order_status_choices': Order.STATUS_CHOICES,
     })
 
@@ -226,7 +280,9 @@ def add_post(request):
         except Exception as e:
             return render(request, 'admin_page/add_post.html', {'error_message': f'Error creating post: {str(e)}'})
 
-    return render(request, 'admin_page/add_post.html')
+    return render(request, 'admin_page/add_post.html', {
+        'categories': Post.CATEGORY_CHOICES
+    })
 
 
 @login_required

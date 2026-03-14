@@ -1,0 +1,460 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Garland Shop{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v={% now 'U' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <header class="main-header">
+        <nav class="glass-nav">
+            <div class="nav-container">
+                <a href="{% url 'user_posts' %}" class="logo">
+                    <span class="logo-accent">BBJM</span> Garland
+                </a>
+
+                <button class="menu-toggle" aria-label="Toggle Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="nav-links">
+                    <li><a href="{% url 'user_posts' %}#home" class="nav-link">Home</a></li>
+                    <li><a href="{% url 'user_posts' %}#about" class="nav-link">Our Story</a></li>
+                    <li><a href="{% url 'user_posts' %}#gallery" class="nav-link">Gallery</a></li>
+                    <li><a href="{% url 'user_posts' %}#contact" class="nav-link">Contact</a></li>
+
+                    <li class="nav-icons-group">
+                        <a href="#" class="nav-icon-wrapper" onclick="openSidebar('wishlistSidebar'); return false;">
+                            <i class="fa-regular fa-heart icon-img" style="color: #146c67;"></i>
+                            <span class="nav-badge" id="wishlist-badge"></span>
+                            <span class="icon-label">Wishlist</span>
+                        </a>
+                        <a href="#" class="nav-icon-wrapper" onclick="openSidebar('cartSidebar'); return false;">
+                            <i class="fa-solid fa-cart-shopping icon-img" style="color: #146c67;"></i>
+                            <span class="nav-badge" id="cart-badge"></span>
+                            <span class="icon-label">Cart</span>
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="user-info" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem;">
+                        <a href="#" onclick="openSidebar('userProfileSidebar'); return false;" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: inherit;">
+                            <i class="fa-solid fa-circle-user" style="font-size: 1.5rem; color: var(--primary);"></i>
+                            <span class="welcome-text" style="font-weight: 600; font-size: 0.95rem;">Hi, {{ user.username }}</span>
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-sm" style="margin-left: 0.5rem;">Logout</a>
+                    </li>
+                    {% else %}
+                    <li style="margin-left: 1rem;"><a href="{% url 'login' %}" class="btn btn-primary-sm">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+        <div class="notifications-container">
+            {% for message in messages %}
+            <div class="notification alert-{{ message.tags }} animate-slide-in">
+                <i
+                    class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-check-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button class="close-alert">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <div class="footer-info">
+                <h3>BBJM Garland</h3>
+                <p>Spreading fragrance and tradition since 1963.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/__jaga_desh_waran__18?igsh=MWs3bnJiOTV6MHRpNA=="><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/919150713797" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://maps.google.com/?q=No:18+Bazaar+St,+Kalavai" target="_blank" title="Find us on Maps"><i class="fas fa-location-dot"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'user_posts' %}#home">Home</a></li>
+                    <li><a href="{% url 'user_posts' %}#about">About Us</a></li>
+                    <li><a href="{% url 'user_posts' %}#gallery">Gallery</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <p><i class="fas fa-location-dot"></i> No:18 Bazaar St, Kalavai</p>
+                <p><i class="fas fa-phone"></i> +91 9150713797</p>
+                <p><i class="fas fa-phone"></i> +91 9787102520</p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:BBJMGarland@gmail.com" style="color: inherit; text-decoration: none;">BBJMGarland@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} BBJM Garland Shop. Handcrafted with Love.</p>
+        </div>
+    </footer>
+
+    <!-- Sidebars and Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeAllSidebars()"></div>
+
+    <!-- Cart Sidebar -->
+    <div class="side-drawer" id="cartSidebar">
+        <div class="drawer-header">
+            <h3>Your Cart</h3>
+            <button class="close-drawer" onclick="closeAllSidebars()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" id="cartItemsContainer">
+            <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
+                <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; margin-bottom: 1rem; color: #e0e0e0;"></i>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your cart is empty.</p>
+                <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary-sm" onclick="closeAllSidebars()">Start Shopping</a>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600;">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">₹0.00</span>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="checkoutCart()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Wishlist Sidebar -->
+    <div class="side-drawer" id="wishlistSidebar">
+        <div class="drawer-header">
+            <h3>Your Wishlist</h3>
+            <button class="close-drawer" onclick="closeAllSidebars()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" id="wishlistItemsContainer">
+             <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
+                <i class="fa-regular fa-heart" style="font-size: 3rem; margin-bottom: 1rem; color: #e0e0e0;"></i>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your wishlist is currently empty.</p>
+                <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary-sm" onclick="closeAllSidebars()">Explore Garlands</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile & Orders Sidebar -->
+    <div class="side-drawer" id="userProfileSidebar">
+        <div class="drawer-header">
+            <h3>My Profile</h3>
+            <button class="close-drawer" onclick="closeAllSidebars()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" style="padding: 1.5rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <i class="fa-solid fa-circle-user" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h4 style="margin: 0; font-size: 1.2rem;">{{ user.get_full_name|default:user.username }}</h4>
+                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">{{ user.email }}</p>
+            </div>
+            
+            <h4 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #eee;">Recent Orders</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for order in user_orders|slice:":5" %}
+                <div style="border: 1px solid #eee; border-radius: var(--radius-sm); padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: flex-start;">
+                        <div>
+                            <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark); display: block;">{{ order.post.title }}</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">ID: #{{ order.post.id }}</span>
+                        </div>
+                        <span style="font-size: 0.85rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; color: white; background-color: {{ order.get_status_display_color }};">
+                            {{ order.get_status_display_name }}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        <span>Ordered: {{ order.created_at|date:"M d, Y" }}</span>
+                        <span style="font-weight: 600; color: var(--secondary);">₹{{ order.total_price }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state" style="text-align: center; padding: 2rem 1rem;">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 1rem; color: #e0e0e0;"></i>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">You haven't placed any orders yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Alert Cloase
+        document.querySelectorAll('.close-alert').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.style.opacity = '0';
+                setTimeout(() => btn.parentElement.remove(), 300);
+            });
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.glass-nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // --- Cart and Wishlist Data Management ---
+        function getItems(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function setItems(key, items) {
+            localStorage.setItem(key, JSON.stringify(items));
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const cartItems = getItems('cartItems');
+            const wishlistItems = getItems('wishlistItems');
+            
+            const cartBadge = document.getElementById('cart-badge');
+            const wishlistBadge = document.getElementById('wishlist-badge');
+            
+            if (cartBadge) {
+                cartBadge.innerText = cartItems.length;
+                cartBadge.style.display = cartItems.length > 0 ? 'flex' : 'none';
+            }
+            if (wishlistBadge) {
+                wishlistBadge.innerText = wishlistItems.length;
+                wishlistBadge.style.display = wishlistItems.length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateBadges);
+
+        function addToCart(id, title, price, image) {
+            const items = getItems('cartItems');
+            const exists = items.find(item => item.id === String(id));
+            
+            if (!exists) {
+                items.push({ id: String(id), title, price: parseFloat(price), image });
+                setItems('cartItems', items);
+                const container = document.querySelector('.notifications-container') || createNotificationContainer();
+                showNotification(container, 'Item added to cart!', 'success');
+            } else {
+                const container = document.querySelector('.notifications-container') || createNotificationContainer();
+                showNotification(container, 'Item is already in your cart!', 'error');
+            }
+        }
+
+        function removeFromCart(id) {
+            let items = getItems('cartItems');
+            items = items.filter(item => item.id !== String(id));
+            setItems('cartItems', items);
+            renderCartSidebar();
+        }
+
+        function addToWishlist(btn, id, title, price, image) {
+            const items = getItems('wishlistItems');
+            const exists = items.find(item => item.id === String(id));
+            const icon = btn ? btn.querySelector('.wishlist-icon') : null;
+            
+            if (!exists) {
+                if(icon) { icon.classList.remove('fa-regular'); icon.classList.add('fa-solid'); }
+                items.push({ id: String(id), title, price: parseFloat(price), image });
+                setItems('wishlistItems', items);
+                const container = document.querySelector('.notifications-container') || createNotificationContainer();
+                showNotification(container, 'Item saved to wishlist!', 'success');
+            } else {
+                if(icon) { icon.classList.add('fa-regular'); icon.classList.remove('fa-solid'); }
+                const newItems = items.filter(item => item.id !== String(id));
+                setItems('wishlistItems', newItems);
+                const container = document.querySelector('.notifications-container') || createNotificationContainer();
+                showNotification(container, 'Item removed from wishlist.', 'success');
+            }
+        }
+        
+        function removeFromWishlist(id) {
+            let items = getItems('wishlistItems');
+            items = items.filter(item => item.id !== String(id));
+            setItems('wishlistItems', items);
+            renderWishlistSidebar();
+        }
+
+        // --- Sidebar Rendering ---
+        function renderCartSidebar() {
+            const items = getItems('cartItems');
+            const container = document.getElementById('cartItemsContainer');
+            const totalEl = document.getElementById('cartSidebarTotal');
+            
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
+                        <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; margin-bottom: 1rem; color: #e0e0e0;"></i>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your cart is empty.</p>
+                        <button class="btn btn-primary-sm" onclick="closeAllSidebars()">Start Shopping</button>
+                    </div>
+                `;
+                totalEl.innerText = '₹0.00';
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+            let total = 0;
+            
+            items.forEach(item => {
+                total += item.price;
+                html += `
+                    <div style="display: flex; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee; align-items: center;">
+                        <img src="${item.image}" alt="${item.title}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: 1rem; color: var(--text-dark);">${item.title}</h4>
+                            <p style="margin: 0; color: var(--secondary); font-weight: 600;">₹${item.price.toFixed(2)}</p>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" style="background: none; border: none; color: #dc3545; cursor: pointer; padding: 0.5rem;"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+            totalEl.innerText = `₹${total.toFixed(2)}`;
+        }
+
+        function renderWishlistSidebar() {
+            const items = getItems('wishlistItems');
+            const container = document.getElementById('wishlistItemsContainer');
+            
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
+                        <i class="fa-regular fa-heart" style="font-size: 3rem; margin-bottom: 1rem; color: #e0e0e0;"></i>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your wishlist is currently empty.</p>
+                        <button class="btn btn-primary-sm" onclick="closeAllSidebars()">Explore Garlands</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+            
+            items.forEach(item => {
+                html += `
+                    <div style="display: flex; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee; align-items: center;">
+                        <img src="${item.image}" alt="${item.title}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="margin: 0; font-size: 1rem; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</h4>
+                            <p style="margin: 0; color: var(--secondary); font-weight: 600;">₹${item.price.toFixed(2)}</p>
+                        </div>
+                        <button onclick="addToCart('${item.id}', '${item.title.replace(/'/g, "\\'")}', ${item.price}, '${item.image}'); removeFromWishlist('${item.id}')" style="background: var(--primary); color: white; border: none; padding: 0.4rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;"><i class="fa-solid fa-cart-plus"></i></button>
+                        <button onclick="removeFromWishlist('${item.id}')" style="background: none; border: none; color: #dc3545; cursor: pointer; padding: 0.5rem;"><i class="fas fa-times"></i></button>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function createNotificationContainer() {
+            const container = document.createElement('div');
+            container.className = 'notifications-container';
+            document.querySelector('main').prepend(container);
+            return container;
+        }
+
+        function showNotification(container, message, type) {
+            const notif = document.createElement('div');
+            notif.className = `notification alert-${type} animate-slide-in`;
+            notif.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+                <button class="close-alert">&times;</button>
+            `;
+            container.appendChild(notif);
+            
+            notif.querySelector('.close-alert').addEventListener('click', () => {
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 300);
+            });
+            
+            setTimeout(() => {
+                if(notif.parentElement) {
+                    notif.style.opacity = '0';
+                    setTimeout(() => notif.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // Sidebar logic
+        function openSidebar(id) {
+            closeAllSidebars();
+            if(id === 'cartSidebar') renderCartSidebar();
+            if(id === 'wishlistSidebar') renderWishlistSidebar();
+            document.getElementById(id).classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAllSidebars() {
+            document.querySelectorAll('.side-drawer').forEach(drawer => {
+                drawer.classList.remove('open');
+            });
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close sidebars on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAllSidebars();
+        });
+
+        // --- Checkout Logic ---
+        function checkoutCart() {
+            const items = getItems('cartItems');
+            if (items.length === 0) {
+                const container = document.querySelector('.notifications-container') || createNotificationContainer();
+                showNotification(container, 'Your cart is empty!', 'error');
+                return;
+            }
+            
+            // Redirect to the internal Bulk Checkout page
+            window.location.href = "{% url 'cart_checkout' %}";
+        }
+    </script>
+</body>
+
+</html>

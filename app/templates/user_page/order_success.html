@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Successful - BBJM Garland{% endblock %}
+
+{% block content %}
+<div class="container section-padding" style="min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 4rem 2rem; text-align: center; max-width: 600px; width: 100%;">
+        <div style="width: 80px; height: 80px; background: #d4edda; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+            <i class="fas fa-check" style="color: #28a745; font-size: 2.5rem;"></i>
+        </div>
+        
+        <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Order Placed Successfully!</h2>
+        <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
+            Thank you for shopping with BBJM Garland. We have received your bulk order request and will process it shortly. Our team will contact you if we need any further details.
+        </p>
+        
+        <a href="{% url 'user_posts' %}" class="btn btn-primary">Return to Home</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Clear the cart securely now that the backend has processed the order
+        localStorage.removeItem('cartItems');
+        
+        // Let the base.html update rules reflect this instantly
+        if (typeof updateBadges === 'function') {
+            updateBadges();
+        }
+    });
+</script>
+{% endblock %}

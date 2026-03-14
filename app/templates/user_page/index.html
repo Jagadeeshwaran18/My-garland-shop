@@ -1,202 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garland Shop - Home</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'user_posts' %}" class="logo">Garland Shop</a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#contact">Contact</a></li>
-                {% if user.is_authenticated %}
-                    <li style="font-weight: 500; color: #667eea;">Hi, {{ user.username }}</li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
-    <!-- Notifications -->
-    {% if messages %}
-        <style>
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            .notification-message {
-                padding: 15px 20px;
-                margin-bottom: 15px;
-                border-radius: 8px;
-                font-weight: 500;
-                animation: slideDown 0.3s ease-out;
-            }
-            .notification-success {
-                background: #d4edda;
-                color: #155724;
-                border: 1px solid #c3e6cb;
-            }
-            .notification-error {
-                background: #f8d7da;
-                color: #721c24;
-                border: 1px solid #f5c6cb;
-            }
-        </style>
-        <div style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
-            {% for message in messages %}
-            <div class="notification-message {% if message.tags == 'error' %}notification-error{% else %}notification-success{% endif %}">
-                {{ message }}
+{% block title %}BBJM Garland - Handcrafted Perfection{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="hero-content">
+        <span class="hero-subtitle">Tradition Since 1963</span>
+        <h1>Fresh Flowers For Any Occasion</h1>
+        <p>Premium handcrafted garlands and floral decorations delivered with love and care.</p>
+        <div class="hero-btns">
+            <a href="#gallery" class="btn btn-primary">Explore Gallery</a>
+            <a href="#about" class="btn btn-outline-white">Our Story</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section id="about" class="section-padding">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-img-frame animate-on-scroll">
+                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800" alt="About BBJM Garland"
+                    class="about-image">
             </div>
+            <div class="about-text-content">
+                <h2 class="section-title">Serving with Trust</h2>
+                <p class="lead">Established in 1963, BBJM Garland has been a cornerstone of tradition and quality floral
+                    craftsmanship for generations.</p>
+                <p>We specialize in creating stunning floral arrangements and decorative garlands for weddings, temple
+                    rituals, and all your special moments. Each piece is handcrafted daily using only the finest,
+                    handpicked blooms.</p>
+                <div style="margin-top: 2.5rem;">
+                    <a href="{% url 'about' %}" class="btn btn-outline-sm">Learn More About Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery" class="section-padding" style="background: #f8f5fa;">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Our Collection</h2>
+            <p>Handpicked designs for your most cherished moments</p>
+
+            <!-- Category Filters -->
+            <div class="filters" style="margin-top: 2rem;">
+                <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary-sm" style="margin: 5px;">All</a>
+                {% for cat_value, cat_name in categories %}
+                <a href="{% url 'category_page' cat_value %}#gallery" class="btn btn-outline-sm" style="margin: 5px;">{{ cat_name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if posts %}
+        <div class="gallery-grid">
+            {% for post in posts %}
+            <article class="card">
+                <div class="card-img-wrapper">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=500"
+                        alt="Garland Placeholder">
+                    {% endif %}
+                    <span class="card-badge">{{ post.get_category_display_name }}</span>
+                </div>
+                <div class="card-body">
+                    <h3>{{ post.title }}</h3>
+                    <p class="card-price">₹{{ post.price }}</p>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ post.description|truncatewords:15 }}
+                    </p>
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-sm" style="width: 100%;">View
+                        Details</a>
+                </div>
+            </article>
             {% endfor %}
         </div>
-    {% endif %}
-
-    <!-- Home Section -->
-    <section id="home" style="background-color:white;">
-        <div class="home11" style="display:flex; padding:40px;">
-            <div class="home1">
-                <h3 style="font-weight:bold;font-size:40px;margin-top:30px;">Welcome to BBJM Garland!</h3>
-                <h1 style="font-size:40px;">Fresh Flowers</h1>
-                <h1 style="font-size:40px;">For Any Occasion</h1>
-                <p style="font-size:30px;margin-top:20px;">We provide the best garland for all your special events.<br>Handpicked flowers arranged with care.</p>
-                
-                <a href="#gallery" class="btn btn-primary" style="margin-top:18px;">View Our Gallery</a>
-            </div>
-            <div style="margin-left:30px;">
-                <img src="{% static 'css/assets/home.jpg' %}">
-            </div>
+        {% else %}
+        <div style="text-align: center; padding: 4rem 0;">
+            <i class="fas fa-seedling" style="font-size: 3rem; color: var(--accent-soft); margin-bottom: 1.5rem;"></i>
+            <p>Our artisans are currently crafting new designs. Check back soon!</p>
         </div>
-                
+        {% endif %}
+    </div>
+</section>
 
-        </section>
+<!-- Contact Section -->
+<section id="contact" class="section-padding">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Get In Touch</h2>
+            <p>We'd love to help you find the perfect garland for your occasion.</p>
+        </div>
 
-        <!-- About Us Section -->
-        <section id="about" class="section">
-            <div class="main-content">
-                <h2>About Us</h2>
-                <div class="about-content">
-                    <div class="about-text">
-                        <p>Welcome to BBJM Garland Shop, your premier destination for beautiful and elegant garlands. We specialize in creating stunning floral arrangements and decorative garlands for weddings, parties, festivals, and special occasions.</p>
-                        <p>With years of experience in the floral industry, we take pride in crafting each garland with attention to detail and using only the finest materials. Our team of skilled artisans ensures that every piece is a work of art.</p>
-                        <p>Whether you're looking for traditional designs or modern arrangements, we have something special for everyone. Our commitment to quality and customer satisfaction sets us apart.</p>
-                        <a href="{% url 'about' %}" class="btn btn-primary" style="margin-top:18px;">View Our History</a>
-                    </div>
-                    <div>
-                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600" alt="About Us" class="about-image" onerror="this.style.display='none'">
-                    </div>
+        <div class="about-grid"> <!-- Reusing grid for layout -->
+            <div class="contact-details">
+                <div class="contact-card"
+                    style="margin-bottom: 2rem; background: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                    <h4><i class="fas fa-location-dot" style="color: var(--accent);"></i> Our Shop</h4>
+                    <p>No:18 Bazaar St, Kalavai-632506, Tamil Nadu</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- Gallery Section -->
-        <section id="gallery" class="section">
-            <div class="main-content">
-                <h2>Our Gallery</h2>
-                <p style="color: #666; margin-bottom: 30px; font-size: 1.1rem;">Explore our beautiful collection of garlands and floral arrangements</p>
-                
-                <!-- Category Filters -->
-                <div style="margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                    <span class="btn btn-primary" style="cursor: default;">All Categories</span>
-                    {% for cat_value, cat_name in categories %}
-                    <a href="{% url 'category_page' cat_value %}" class="btn btn-secondary" style="text-decoration: none;">{{ cat_name }}</a>
-                    {% endfor %}
-                </div>
-                
-                {% if posts %}
-                <div class="gallery">
-                    {% for post in posts %}
-                    <div class="gallery-item">
-                        {% if post.image %}
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
-                        {% endif %}
-                        <div class="gallery-item-content">
-                            <span style="display: inline-block; background: #667eea; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 10px;">{{ post.get_category_display_name }}</span>
-                            <h3>{{ post.title }}</h3>
-                            <p>{{ post.description|truncatewords:25 }}</p>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
-                                <p class="post-date" style="margin: 0;">Posted: {{ post.created_at|date:"M d, Y" }}</p>
-                                <p style="margin: 0; font-size: 1.3rem; font-weight: bold; color: #28a745;">₹{{ post.price }}</p>
-                            </div>
-                            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">View Details</a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div style="text-align: center; padding: 60px 20px;">
-                    <p style="font-size: 1.2rem; color: #666;">
-                        {% if selected_category %}
-                            No items in this category yet. Check back soon!
-                        {% else %}
-                            No items in gallery yet. Check back soon!
-                        {% endif %}
+                <div class="contact-card"
+                    style="margin-bottom: 2rem; background: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                    <h4><i class="fas fa-phone" style="color: var(--accent);"></i> Call Us</h4>
+                    <p>
+                        +91 9150713797<br>
+                        +91 9787102520<br>
+                        <small>6 AM - 8 PM Daily</small>
                     </p>
                 </div>
-                {% endif %}
+                <div class="contact-card"
+                    style="background: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+                    <h4><i class="fas fa-envelope" style="color: var(--accent);"></i> Email</h4>
+                    <p>BBJMGarland@gmail.com</p>
+                </div>
             </div>
-        </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="section">
-            <div class="main-content">
-                <h2>Contact Us</h2>
-                <p style="color: #666; margin-bottom: 30px; text-align: center;">We'd love to hear from you. Get in touch with us!</p>
-                
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <h3>📍 Address</h3>
-                        <p>No:18 Bazaar St<br>Kalavai-632506,Tamil Nadu</p>
+            <div class="contact-form-wrapper"
+                style="background: white; padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+                <form method="post" action="#" class="premium-form">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" name="name" placeholder="Your Name" required
+                            style="width: 100%; padding: 1rem; border: 1px solid #eee; border-radius: var(--radius-sm); font-family: inherit;">
                     </div>
-                    <div class="contact-item">
-                        <h3>📞 Phone</h3>
-                        <p>+91 8976453215<br>Mon-Sun: 6AM - 8PM</p>
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="email" name="email" placeholder="Your Email" required
+                            style="width: 100%; padding: 1rem; border: 1px solid #eee; border-radius: var(--radius-sm); font-family: inherit;">
                     </div>
-                    <div class="contact-item">
-                        <h3>✉️ Email</h3>
-                        <p>BBJM@gmail.com<br>BBJMGarland@gmail.com</p>
+                    <div style="margin-bottom: 2rem;">
+                        <textarea name="message" id="contactMessage" rows="4" placeholder="How can we help you?" required
+                            style="width: 100%; padding: 1rem; border: 1px solid #eee; border-radius: var(--radius-sm); font-family: inherit;"></textarea>
                     </div>
-                </div>
-                
-                <div class="contact-form">
-                    <form method="post" action="#">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="contact_name">Your Name:</label>
-                            <input type="text" id="contact_name" name="name" placeholder="Enter your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contact_email">Your Email:</label>
-                            <input type="email" id="contact_email" name="email" placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contact_message">Message:</label>
-                            <textarea id="contact_message" name="message" rows="5" placeholder="Enter your message" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-                    </form>
-                </div>
+                    <button type="button" onclick="sendWhatsAppMessage()" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+                <script>
+                    function sendWhatsAppMessage() {
+                        const message = document.getElementById('contactMessage').value;
+                        const phone = "919150713797";
+                        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                        window.open(url, '_blank');
+                    }
+                </script>
             </div>
-        </section>
+        </div>
     </div>
-
-    <footer style="background: rgba(255, 255, 255, 0.95); padding: 30px 0; margin-top: 50px; text-align: center; color: #666;">
-        <p>&copy; 2024 Garland Shop. All rights reserved.</p>
-    </footer>
-</body>
-</html>
-
+</section>
+{% endblock %}

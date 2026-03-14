@@ -1,86 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ category_name }} - Garland Shop</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'user_posts' %}" class="logo">Garland Shop</a>
-            <ul class="nav-links">
-                <li><a href="{% url 'user_posts' %}#home">Home</a></li>
-                <li><a href="{% url 'user_posts' %}#about">About Us</a></li>
-                <li><a href="{% url 'user_posts' %}#gallery">Gallery</a></li>
-                <li><a href="{% url 'user_posts' %}#contact">Contact</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
+{% block title %}{{ category_name }} - BBJM Garland{% endblock %}
+
+{% block content %}
+<section class="hero" style="height: 40vh; min-height: 300px; clip-path: none;">
+    <div class="hero-content">
+        <span class="hero-subtitle">Collection</span>
+        <h1>{{ category_name }}</h1>
+    </div>
+</section>
+
+<section class="section-padding">
     <div class="container">
-        <div class="main-content">
-            <div style="margin-bottom: 30px;">
-                <a href="{% url 'user_posts' %}#gallery" class="btn btn-secondary" style="text-decoration: none; margin-bottom: 20px;">← Back to Gallery</a>
-                <h1 style="color: #667eea; margin-top: 20px;">{{ category_name }}</h1>
-                <p style="color: #666; font-size: 1.1rem;">Browse our collection of {{ category_name|lower }}</p>
-            </div>
-
-            <!-- Category Navigation -->
-            <div style="margin-bottom: 40px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-                <h3 style="margin-bottom: 15px; color: #333;">Browse Other Categories:</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="{% url 'user_posts' %}#gallery" class="btn btn-secondary" style="text-decoration: none;">All Categories</a>
-                    {% for cat_value, cat_name in categories %}
-                        {% if cat_value != category %}
-                        <a href="{% url 'category_page' cat_value %}" class="btn btn-secondary" style="text-decoration: none;">{{ cat_name }}</a>
-                        {% else %}
-                        <span class="btn btn-primary" style="cursor: default;">{{ cat_name }}</span>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Posts Grid -->
-            {% if posts %}
-            <div class="gallery">
-                {% for post in posts %}
-                <div class="gallery-item">
-                    {% if post.image %}
-                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+        <div class="breadcrumb" style="margin-bottom: 2rem;">
+            <a href="{% url 'user_posts' %}#gallery" class="nav-link"><i class="fas fa-arrow-left"></i> All Categories</a>
+        </div>
+        
+        <div class="section-header">
+            <h2 class="section-title">Our {{ category_name }}</h2>
+            <div class="filters" style="margin-top: 1.5rem;">
+                <a href="{% url 'user_posts' %}#gallery" class="btn btn-outline-sm" style="margin: 5px;">Back to All</a>
+                {% for cat_value, cat_name in categories %}
+                    {% if cat_value == category %}
+                        <a href="{% url 'category_page' cat_value %}#gallery" class="btn btn-primary-sm" style="margin: 5px;">{{ cat_name }}</a>
+                    {% else %}
+                        <a href="{% url 'category_page' cat_value %}#gallery" class="btn btn-outline-sm" style="margin: 5px;">{{ cat_name }}</a>
                     {% endif %}
-                    <div class="gallery-item-content">
-                        <span style="display: inline-block; background: #667eea; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 10px;">{{ post.get_category_display_name }}</span>
-                        <h3>{{ post.title }}</h3>
-                        <p>{{ post.description|truncatewords:25 }}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
-                            <p class="post-date" style="margin: 0;">Posted: {{ post.created_at|date:"M d, Y" }}</p>
-                            <p style="margin: 0; font-size: 1.3rem; font-weight: bold; color: #28a745;">₹{{ post.price }}</p>
-                        </div>
-                        <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
                 {% endfor %}
             </div>
-            {% else %}
-            <div style="text-align: center; padding: 60px 20px; background: #f8f9fa; border-radius: 10px;">
-                <p style="font-size: 1.2rem; color: #666; margin-bottom: 20px;">No items in this category yet.</p>
-                <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary" style="text-decoration: none;">View All Categories</a>
-            </div>
-            {% endif %}
         </div>
+
+        {% if posts %}
+        <div class="gallery-grid">
+            {% for post in posts %}
+            <article class="card">
+                <div class="card-img-wrapper">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=500" alt="Garland Placeholder">
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h3>{{ post.title }}</h3>
+                    <p class="card-price">₹{{ post.price }}</p>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ post.description|truncatewords:15 }}</p>
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-sm" style="width: 100%;">View Details</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 4rem 0;">
+            <i class="fas fa-cloud-sun" style="font-size: 3rem; color: var(--accent-soft); margin-bottom: 1.5rem;"></i>
+            <p>We are currently designing new {{ category_name }} options. Please check back later!</p>
+        </div>
+        {% endif %}
     </div>
-
-    <footer style="background: rgba(255, 255, 255, 0.95); padding: 30px 0; margin-top: 50px; text-align: center; color: #666;">
-        <p>&copy; 2024 Garland Shop. All rights reserved.</p>
-    </footer>
-</body>
-</html>
-
+</section>
+{% endblock %}

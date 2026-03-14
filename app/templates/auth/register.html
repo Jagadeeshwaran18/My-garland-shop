@@ -1,52 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Garland Shop</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="login-container">
-        <h1>Create your account</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-        {% if error_message %}
-        <div class="error-message">
-            {{ error_message }}
-        </div>
-        {% endif %}
+{% block title %}Join Us - BBJM Garland{% endblock %}
 
-        <form method="post" autocomplete="off">
-            {% csrf_token %}
-
-            <div class="form-group">
-                <label for="username">Username<span style="color:#dc3545;">*</span></label>
-                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+{% block content %}
+<section class="section-padding" style="min-height: 90vh; display: flex; align-items: center; background: url('{% static 'css/assets/hero_bg.png' %}') center center/cover;">
+    <div class="container" style="display: flex; justify-content: center;">
+        <div class="card" style="max-width: 550px; width: 100%; padding: 3rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h2 class="section-title">Create Account</h2>
+                <p>Join the BBJM Garland community</p>
+                
+                {% if error_message %}
+                <div style="background: rgba(220, 53, 69, 0.1); color: var(--secondary); padding: 1rem; border-radius: var(--radius-sm); margin-top: 1rem; border: 1px solid rgba(220, 53, 69, 0.2);">
+                    <i class="fas fa-exclamation-circle"></i> {{ error_message }}
+                </div>
+                {% endif %}
             </div>
+            
+            <form method="post" action="{% url 'register' %}">
+                {% csrf_token %}
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Username</label>
+                        <input type="text" name="username" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email</label>
+                        <input type="email" name="email" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="email">Email (optional)</label>
-                <input type="email" id="email" name="email" placeholder="you@example.com">
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password<span style="color:#dc3545;">*</span></label>
-                <input type="password" id="password" name="password" placeholder="Enter a password" required>
-            </div>
-
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password<span style="color:#dc3545;">*</span></label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Create account</button>
-        </form>
-
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="{% url 'login' %}" style="color: #667eea; text-decoration: none;">Already have an account? Login →</a>
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
+                        <input type="password" name="password" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Confirm Password</label>
+                        <input type="password" name="confirm_password" required 
+                               style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1.5rem;">Create Account</button>
+                
+                <p style="text-align: center; font-size: 0.9rem;">
+                    Already have an account? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Sign in here</a>
+                </p>
+            </form>
         </div>
     </div>
-</body>
-</html>
-
+</section>
+{% endblock %}

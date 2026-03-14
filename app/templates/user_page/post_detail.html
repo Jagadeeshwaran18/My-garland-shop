@@ -1,69 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post.title }} - Garland Shop</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'user_posts' %}" class="logo">Garland Shop</a>
-            <ul class="nav-links">
-                <li><a href="{% url 'user_posts' %}#home">Home</a></li>
-                <li><a href="{% url 'user_posts' %}#about">About Us</a></li>
-                <li><a href="{% url 'user_posts' %}#gallery">Gallery</a></li>
-                <li><a href="{% url 'user_posts' %}#contact">Contact</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="{% url 'user_posts' %}#gallery">← Back to Gallery</a>
+{% block title %}{{ post.title }} - BBJM Garland{% endblock %}
+
+{% block content %}
+<div class="container section-padding" style="margin-top: 50px;">
+    <div class="breadcrumb" style="margin-bottom: 2rem;">
+        <a href="{% url 'user_posts' %}#gallery" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Gallery</a>
+    </div>
+    
+    <article class="post-detail-container">
+        <div class="about-grid">
+            <div class="post-image-gallery">
+                <div class="about-img-frame">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="about-image">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=800" alt="Garland Placeholder" class="about-image">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="post-content-details">
+                <span class="card-badge" style="position: static; margin-bottom: 1rem;">{{ post.get_category_display_name }}</span>
+                <h1 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">{{ post.title }}</h1>
+                
+                <div class="price-banner" style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius-md); border-left: 5px solid var(--accent); margin-bottom: 2rem;">
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Price</p>
+                    <p style="margin: 0; font-size: 2.5rem; font-weight: 700; color: var(--secondary);">₹{{ post.price }}</p>
+                </div>
+                
+                <div class="description-section">
+                    <h4 style="margin-bottom: 1rem; font-family: var(--font-body); font-weight: 600; color: var(--text-dark);">Description</h4>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;">{{ post.description|linebreaks }}</p>
+                </div>
+                
+                <div style="margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="{% url 'create_order' post.id %}" class="btn btn-primary" style="flex: 2; padding: 1.2rem;">Place Your Order</a>
+                        <a href="https://wa.me/919150713797?text=I'm interested in {{ post.title }}" target="_blank" class="btn btn-outline-white" style="flex: 1; border-color: var(--primary); color: var(--primary); padding: 1.2rem;">
+                            <i class="fab fa-whatsapp"></i> Inquire
+                        </a>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-outline-sm" style="flex: 1; padding: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #146c67; color: #146c67; font-size: 1.05rem;" onclick="addToCart('{{ post.id }}', '{{ post.title|escapejs }}', {{ post.price }}, '{% if post.image %}{{ post.image.url }}{% else %}https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=800{% endif %}')">
+                            <i class="fa-solid fa-cart-plus" style="font-size: 1.2rem;"></i> Add to Cart
+                        </button>
+                        <button class="btn btn-outline-sm" style="flex: 1; padding: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #dc3545; border-color: #dc3545; font-size: 1.05rem;" onclick="addToWishlist(this, '{{ post.id }}', '{{ post.title|escapejs }}', {{ post.price }}, '{% if post.image %}{{ post.image.url }}{% else %}https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=800{% endif %}')">
+                            <i class="fa-regular fa-heart wishlist-icon" style="font-size: 1.2rem;"></i> Wishlist
+                        </button>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="fas fa-clock"></i> Posted on {{ post.created_at|date:"F d, Y" }}
+                </p>
+            </div>
         </div>
-        
-        <article class="post-detail">
-            <div style="margin-bottom: 15px;">
-                <span style="display: inline-block; background: #667eea; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">{{ post.get_category_display_name }}</span>
+    </article>
+</div>
+
+<section class="section-padding" style="background: white; border-top: 1px solid #eee;">
+    <div class="container">
+        <h2 class="section-title" style="font-size: 2rem;">Why BBJM Garlands?</h2>
+        <div class="gallery-grid" style="margin-top: 3rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-leaf" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h5>Always Fresh</h5>
+                <p>Handpicked blooms prepared daily.</p>
             </div>
-            <h1>{{ post.title }}</h1>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <p class="post-date" style="margin: 0;">Posted: {{ post.created_at|date:"F d, Y" }}</p>
-                <p style="margin: 0; font-size: 2rem; font-weight: bold; color: #28a745;">₹{{ post.price }}</p>
+            <div style="text-align: center;">
+                <i class="fas fa-truck-fast" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h5>Timely Delivery</h5>
+                <p>We respect your special moments.</p>
             </div>
-            
-            {% if post.image %}
-            <div class="post-detail-image-container">
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
+            <div style="text-align: center;">
+                <i class="fas fa-hand-sparkles" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h5>Artisanal Quality</h5>
+                <p>Traditional designs made with care.</p>
             </div>
-            {% endif %}
-            
-            <div class="post-description">
-                <p>{{ post.description|linebreaks }}</p>
-            </div>
-            
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="{% url 'create_order' post.id %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px;">Place Order</a>
-            </div>
-        </article>
-        
-      
-        
-        <div class="actions">
-            <a href="{% url 'user_posts' %}#gallery" class="btn btn-primary">Back to Gallery</a>
         </div>
     </div>
-
-    <footer style="background: rgba(255, 255, 255, 0.95); padding: 30px 0; margin-top: 50px; text-align: center; color: #666;">
-        <p>&copy; 2024 Garland Shop. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+</section>
+{% endblock %}

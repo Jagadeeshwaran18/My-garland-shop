@@ -1,73 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Post - Garland Shop</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'admin_dashboard' %}" class="logo">Admin Dashboard</a>
-            <ul class="nav-links">
-                <li><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-                <li><a href="{% url 'user_posts' %}">View Website</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
-    <div class="container">
-        <div class="main-content">
-            <h1>Edit Post</h1>
-            {% if error_message %}
-            <div class="error-message">
-                {{ error_message }}
+{% block title %}Manage Product - BBJM Garland{% endblock %}
+
+{% block content %}
+<section class="hero" style="height: 30vh; min-height: 250px; clip-path: none;">
+    <div class="hero-content">
+        <h1>Product Management</h1>
+    </div>
+</section>
+
+<div class="container section-padding">
+    <div class="breadcrumb" style="margin-bottom: 2rem;">
+        <a href="{% url 'admin_dashboard' %}" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="card" style="max-width: 800px; margin: 0 auto; padding: 3rem;">
+        <h2 class="section-title" style="text-align: left; font-size: 2rem;">{% if 'edit' in request.path %}Edit Product Details{% else %}Add New Product{% endif %}</h2>
+        
+        <form method="post" enctype="multipart/form-data" class="premium-form">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Product Title</label>
+                <input type="text" name="title" value="{{ post.title }}" required 
+                       style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
             </div>
-            {% endif %}
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" value="{{ post.title }}" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description" rows="5" required>{{ post.description }}</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="garland" {% if post.category == 'garland' %}selected{% endif %}>Garland for Marriage</option>
-                        <option value="marriage" {% if post.category == 'marriage' %}selected{% endif %}>Decoration for Marriage</option>
-                        <option value="gods" {% if post.category == 'gods' %}selected{% endif %}>Gods Decoration</option>
-                        <option value="gods_decoration" {% if post.category == 'gods_decoration' %}selected{% endif %}>Gods Garland</option>
+            
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Category</label>
+                    <select name="category" required style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm); background: white;">
+                        {% for cat_value, cat_name in categories %}
+                            <option value="{{ cat_value }}" {% if post.category == cat_value %}selected{% endif %}>{{ cat_name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="price">Price (₹):</label>
-                    <input type="number" id="price" name="price" step="0.01" min="0" value="{{ post.price }}" placeholder="Enter price" required>
-                    <small>Enter the price in rupees</small>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Price (₹)</label>
+                    <input type="number" step="0.01" name="price" value="{{ post.price }}" required 
+                           style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm);">
                 </div>
-                <div class="form-group">
-                    <label for="image">Image:</label>
-                    {% if post.image %}
-                    <div class="current-image">
-                        <p><strong>Current image:</strong></p>
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 300px; border-radius: 8px; margin: 10px 0;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Description</label>
+                <textarea name="description" rows="5" required 
+                          style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: var(--radius-sm); font-family: inherit;">{{ post.description }}</textarea>
+            </div>
+
+            <div style="margin-bottom: 2.5rem; padding: 1.5rem; background: #f8f5fa; border-radius: var(--radius-md);">
+                <label style="display: block; margin-bottom: 0.8rem; font-weight: 500;">Product Image</label>
+                {% if post.image %}
+                    <div style="margin-bottom: 1rem;">
+                        <img src="{{ post.image.url }}" style="height: 100px; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
                     </div>
-                    {% endif %}
-                    <input type="file" id="image" name="image" accept="image/*">
-                    <small>Leave empty to keep current image</small>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Update Post</button>
-                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
+                {% endif %}
+                <input type="file" name="image" {% if not post.image %}required{% endif %}
+                       style="width: 100%; font-family: inherit;">
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 2;">Save Changes</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-white" style="flex: 1; border-color: #ddd; color: var(--text-muted);">Cancel</a>
+            </div>
+        </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
