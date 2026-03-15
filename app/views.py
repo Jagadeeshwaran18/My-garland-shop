@@ -303,9 +303,16 @@ def edit_post(request, id):
             post.save()
             return redirect('admin_dashboard')
         except Exception as e:
-            return render(request, 'admin_page/edit_post.html', {'post': post, 'error_message': f'Error updating post: {str(e)}'})
+            return render(request, 'admin_page/edit_post.html', {
+                'post': post, 
+                'error_message': f'Error updating post: {str(e)}',
+                'categories': Post.CATEGORY_CHOICES
+            })
 
-    return render(request, 'admin_page/edit_post.html', {'post': post})
+    return render(request, 'admin_page/edit_post.html', {
+        'post': post,
+        'categories': Post.CATEGORY_CHOICES
+    })
 
 
 @login_required
